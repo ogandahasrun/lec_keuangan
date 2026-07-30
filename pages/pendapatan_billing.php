@@ -5,6 +5,7 @@
 $tgl_awal = isset($_GET['tanggal_awal']) ? $_GET['tanggal_awal'] : date('Y-m-d');
 $tgl_akhir = isset($_GET['tanggal_akhir']) ? $_GET['tanggal_akhir'] : date('Y-m-d');
 $kd_pj = isset($_GET['kd_pj']) ? $_GET['kd_pj'] : '';
+$sort_by = isset($_GET['sort_by']) ? $_GET['sort_by'] : 'nm_perawatan';
 
 // Retrieve name of organization / institution
 $nama_organisasi = 'RSUD Pringsewu'; // default value
@@ -42,9 +43,9 @@ if ($result_ab) {
 <style>
 /* Reset DataTables basic styles to match theme */
 table.dataTable thead th {
-    background: rgba(0,0,0,0.2) !important;
-    color: var(--text-muted) !important;
-    border-bottom: 1px solid var(--border) !important;
+    background: var(--sidebar-bg) !important;
+    color: var(--text-main) !important;
+    border-bottom: 2px solid var(--border) !important;
     font-size: 13px !important;
     text-transform: uppercase;
 }
@@ -127,6 +128,15 @@ table.dataTable tbody tr:hover {
                 <div class="form-group" style="margin:0;">
                     <label class="form-label" for="tanggal_akhir">Tanggal Akhir (tgl_byr)</label>
                     <input type="date" id="tanggal_akhir" name="tanggal_akhir" class="form-control" required value="<?php echo htmlspecialchars($tgl_akhir); ?>">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label class="form-label" for="sort_by">Urutkan (Setelah Tgl)</label>
+                    <select id="sort_by" name="sort_by" class="form-control">
+                        <option value="nm_perawatan" <?php echo ($sort_by == 'nm_perawatan') ? 'selected' : ''; ?>>Nota / Tindakan</option>
+                        <option value="nm_pasien" <?php echo ($sort_by == 'nm_pasien') ? 'selected' : ''; ?>>Nama Pasien</option>
+                        <option value="no_rawat" <?php echo ($sort_by == 'no_rawat') ? 'selected' : ''; ?>>No Rawat</option>
+                        <option value="png_jawab" <?php echo ($sort_by == 'png_jawab') ? 'selected' : ''; ?>>Jenis Bayar</option>
+                    </select>
                 </div>
                 <div class="form-group" style="margin:0;">
                     <label class="form-label" for="kd_pj">Penanggung Jawab</label>
@@ -243,9 +253,9 @@ table.dataTable tbody tr:hover {
             }
 
             // Sort combined rows by tgl_byr ASC, then nm_perawatan ASC
-            usort($combined_rows, function($a, $b) {
+            usort($combined_rows, function($a, $b) use ($sort_by) {
                 if ($a['tgl_byr'] === $b['tgl_byr']) {
-                    return strcmp($a['nm_perawatan'], $b['nm_perawatan']);
+                    return strcmp($a[$sort_by] ?? '', $b[$sort_by] ?? '');
                 }
                 return strcmp($a['tgl_byr'], $b['tgl_byr']);
             });
@@ -293,12 +303,12 @@ table.dataTable tbody tr:hover {
                                     <th class="text-right">PPN Obat</th>
                                     <th class="text-right">Potongan</th>
                                     <th class="text-right">Sub Total</th>
-                                    <th>Keterangan Potongan</th>
-                                    <th>Dokter</th>
-                                    <th>Nama Tindakan</th>
                                     <?php foreach ($akun_bayar_options as $ab) { ?>
                                         <th class="text-right"><?php echo htmlspecialchars($ab); ?></th>
                                     <?php } ?>
+                                    <th>Dokter</th>
+                                    <th>Nama Tindakan</th>
+                                    <th>Keterangan Potongan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -571,12 +581,11 @@ table.dataTable tbody tr:hover {
                                                 <td class='text-right'>" . formatRupiah($date_totals['laborat']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['ppn_obat']) . "</td>
                                                 <td class='text-right' style='color: var(--danger);'>" . formatRupiah($date_totals['potongan']) . "</td>
-                                                <td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['sub_total']) . "</td>
-                                                <td></td><td></td><td></td>";
+                                                <td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['sub_total']) . "</td>";
                                         foreach ($akun_bayar_options as $ab) {
                                             echo "<td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['bayar'][$ab] ?? 0) . "</td>";
                                         }
-                                        echo "</tr>";
+                                        echo "<td></td><td></td><td></td></tr>";
                                               
                                         // Reset date totals
                                         foreach ($date_totals as $k => $v) {
@@ -643,12 +652,12 @@ table.dataTable tbody tr:hover {
                                         <td class="text-right"><?php echo formatRupiah($col_ppn_obat); ?></td>
                                         <td class="text-right" style="color: var(--danger);"><?php echo formatRupiah($col_potongan); ?></td>
                                         <td class="text-right" style="font-weight: 600; color: var(--primary);"><?php echo formatRupiah($col_subtotal); ?></td>
-                                        <td><?php echo htmlspecialchars($ket_potongan); ?></td>
-                                        <td><?php echo htmlspecialchars($nm_dokter); ?></td>
-                                        <td><?php echo htmlspecialchars($tindakan_operasi_str); ?></td>
                                         <?php foreach ($akun_bayar_options as $ab) { ?>
                                             <td class="text-right"><?php echo formatRupiah($row_bayar[$ab] ?? 0); ?></td>
                                         <?php } ?>
+                                        <td><?php echo htmlspecialchars($nm_dokter); ?></td>
+                                        <td><?php echo htmlspecialchars($tindakan_operasi_str); ?></td>
+                                        <td><?php echo htmlspecialchars($ket_potongan); ?></td>
                                     </tr>
                                 <?php
                                 }
@@ -666,12 +675,11 @@ table.dataTable tbody tr:hover {
                                             <td class='text-right'>" . formatRupiah($date_totals['laborat']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['ppn_obat']) . "</td>
                                             <td class='text-right' style='color: var(--danger);'>" . formatRupiah($date_totals['potongan']) . "</td>
-                                            <td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['sub_total']) . "</td>
-                                            <td></td><td></td><td></td>";
+                                            <td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['sub_total']) . "</td>";
                                     foreach ($akun_bayar_options as $ab) {
                                         echo "<td class='text-right' style='color: var(--primary);'>" . formatRupiah($date_totals['bayar'][$ab] ?? 0) . "</td>";
                                     }
-                                    echo "</tr>";
+                                    echo "<td></td><td></td><td></td></tr>";
                                 }
 
                                 if ($stmt_billing_sub) mysqli_stmt_close($stmt_billing_sub);
@@ -699,10 +707,10 @@ table.dataTable tbody tr:hover {
                                     <th class="text-right"><?php echo formatRupiah($totals['ppn_obat']); ?></th>
                                     <th class="text-right" style="color: white; background: linear-gradient(135deg, #ef4444, #dc2626);"><?php echo formatRupiah($totals['potongan']); ?></th>
                                     <th class="text-right" style="color: white; background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: bold;"><?php echo formatRupiah($totals['sub_total']); ?></th>
-                                    <th></th><th></th><th></th>
                                     <?php foreach ($akun_bayar_options as $ab) { ?>
                                         <th class="text-right" style="color: white; background: linear-gradient(135deg, #0284c7, #0369a1); font-weight: bold;"><?php echo formatRupiah($totals['bayar'][$ab] ?? 0); ?></th>
                                     <?php } ?>
+                                    <th></th><th></th><th></th>
                                 </tr>
                             </tfoot>
                         </table>
