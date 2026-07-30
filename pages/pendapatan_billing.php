@@ -136,6 +136,7 @@ table.dataTable tbody tr:hover {
                         <option value="nm_pasien" <?php echo ($sort_by == 'nm_pasien') ? 'selected' : ''; ?>>Nama Pasien</option>
                         <option value="no_rawat" <?php echo ($sort_by == 'no_rawat') ? 'selected' : ''; ?>>No Rawat</option>
                         <option value="png_jawab" <?php echo ($sort_by == 'png_jawab') ? 'selected' : ''; ?>>Jenis Bayar</option>
+                        <option value="nm_dokter" <?php echo ($sort_by == 'nm_dokter') ? 'selected' : ''; ?>>Dokter</option>
                     </select>
                 </div>
                 <div class="form-group" style="margin:0;">
@@ -168,12 +169,14 @@ table.dataTable tbody tr:hover {
                             pasien.no_rkm_medis,
                             pasien.nm_pasien,
                             billing.nm_perawatan,
-                            penjab.png_jawab
+                            penjab.png_jawab,
+                            COALESCE(dokter.nm_dokter, '-') as nm_dokter
                           FROM
                             billing
                             INNER JOIN reg_periksa ON billing.no_rawat = reg_periksa.no_rawat
                             INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
                             INNER JOIN penjab ON reg_periksa.kd_pj = penjab.kd_pj
+                            LEFT JOIN dokter ON reg_periksa.kd_dokter = dokter.kd_dokter
                           WHERE
                             billing.tgl_byr BETWEEN ? AND ?
                             AND billing.`no` = 'No.Nota'";
@@ -205,7 +208,8 @@ table.dataTable tbody tr:hover {
                             'no_rkm_medis' => $row['no_rkm_medis'],
                             'nm_pasien' => $row['nm_pasien'],
                             'png_jawab' => $row['png_jawab'],
-                            'nm_perawatan' => $row['nm_perawatan']
+                            'nm_perawatan' => $row['nm_perawatan'],
+                            'nm_dokter' => $row['nm_dokter'] ?? '-'
                         ];
                     }
                 }
@@ -244,11 +248,51 @@ table.dataTable tbody tr:hover {
                                 'nm_perawatan' => $r_pj['nota_jual'],
                                 'total_obat_bhp' => (float)$r_pj['total_obat_bhp'],
                                 'ppn' => (float)$r_pj['ppn'],
-                                'nama_bayar' => $r_pj['nama_bayar']
+                                'nama_bayar' => $r_pj['nama_bayar'],
+                                'nm_dokter' => '-'
                             ];
                         }
                     }
                     mysqli_stmt_close($stmt_pj);
+                }
+
+                // Fetch Piutang Obat data if Penjab filter is empty or 'UMU' (Umum)
+                $query_piutang = "SELECT 
+                                    p.tgl_piutang,
+                                    p.nota_piutang,
+                                    p.no_rkm_medis,
+                                    p.nm_pasien,
+                                    p.ppn,
+                                    p.sisapiutang,
+                                    COALESCE(SUM(d.total), 0) as total_obat_bhp
+                                FROM piutang p
+                                INNER JOIN detailpiutang d ON d.nota_piutang = p.nota_piutang
+                                WHERE p.tgl_piutang BETWEEN ? AND ?
+                                GROUP BY p.nota_piutang, p.tgl_piutang, p.no_rkm_medis, p.nm_pasien, p.ppn, p.sisapiutang";
+                $stmt_pt = mysqli_prepare($koneksi, $query_piutang);
+                if ($stmt_pt) {
+                    mysqli_stmt_bind_param($stmt_pt, "ss", $tgl_awal, $tgl_akhir);
+                    mysqli_stmt_execute($stmt_pt);
+                    $res_pt = mysqli_stmt_get_result($stmt_pt);
+                    if ($res_pt) {
+                        while ($r_pt = mysqli_fetch_assoc($res_pt)) {
+                            $combined_rows[] = [
+                                'type' => 'piutang',
+                                'tgl_byr' => $r_pt['tgl_piutang'],
+                                'no_rawat' => '-',
+                                'no_rkm_medis' => (!empty($r_pt['no_rkm_medis']) && $r_pt['no_rkm_medis'] !== '-') ? $r_pt['no_rkm_medis'] : '-',
+                                'nm_pasien' => $r_pt['nm_pasien'],
+                                'png_jawab' => 'Piutang Obat',
+                                'nm_perawatan' => $r_pt['nota_piutang'],
+                                'total_obat_bhp' => (float)$r_pt['total_obat_bhp'],
+                                'ppn' => (float)$r_pt['ppn'],
+                                'sisapiutang' => (float)$r_pt['sisapiutang'],
+                                'nama_bayar' => '',
+                                'nm_dokter' => '-'
+                            ];
+                        }
+                    }
+                    mysqli_stmt_close($stmt_pt);
                 }
             }
 
@@ -494,13 +538,15 @@ table.dataTable tbody tr:hover {
                                         }
 
                                         // 7. Fetch Dokter
-                                        $nm_dokter = '-';
-                                        if ($stmt_dokter_sub) {
-                                            mysqli_stmt_bind_param($stmt_dokter_sub, "s", $no_rawat);
-                                            mysqli_stmt_execute($stmt_dokter_sub);
-                                            $res_dokter = mysqli_stmt_get_result($stmt_dokter_sub);
-                                            if ($r_dokter = mysqli_fetch_assoc($res_dokter)) {
-                                                $nm_dokter = $r_dokter['nm_dokter'] ?? '-';
+                                        $nm_dokter = $row['nm_dokter'] ?? '-';
+                                        if ($row['type'] === 'billing' && ($nm_dokter === '-' || empty($nm_dokter))) {
+                                            if ($stmt_dokter_sub) {
+                                                mysqli_stmt_bind_param($stmt_dokter_sub, "s", $no_rawat);
+                                                mysqli_stmt_execute($stmt_dokter_sub);
+                                                $res_dokter = mysqli_stmt_get_result($stmt_dokter_sub);
+                                                if ($r_dokter = mysqli_fetch_assoc($res_dokter)) {
+                                                    $nm_dokter = $r_dokter['nm_dokter'] ?? '-';
+                                                }
                                             }
                                         }
 
@@ -543,7 +589,7 @@ table.dataTable tbody tr:hover {
 
                                         $col_subtotal = ($col_rawat_jalan + $col_pelayanan_penunjang + $col_operasi + $col_lensa + 
                                                          $col_obat_bhp + $col_ranap + $col_narkose + $col_laboratorium + $col_ppn_obat) + $col_potongan;
-                                    } else {
+                                    } else if ($row['type'] === 'penjualan') {
                                         // Penjualan Bebas Row
                                         $col_rawat_jalan = 0;
                                         $col_pelayanan_penunjang = 0;
@@ -561,9 +607,25 @@ table.dataTable tbody tr:hover {
                                         $tindakan_operasi_str = '-';
 
                                         $nm_b = $row['nama_bayar'] ?? '';
-                                        if (isset($row_bayar[$nm_b])) {
+                                        if (!empty($nm_b) && isset($row_bayar[$nm_b])) {
                                             $row_bayar[$nm_b] = $col_subtotal;
                                         }
+                                    } else if ($row['type'] === 'piutang') {
+                                        // Piutang Obat Row
+                                        $col_rawat_jalan = 0;
+                                        $col_pelayanan_penunjang = 0;
+                                        $col_operasi = 0;
+                                        $col_lensa = 0;
+                                        $col_obat_bhp = $row['total_obat_bhp'];
+                                        $col_ranap = 0;
+                                        $col_narkose = 0;
+                                        $col_laboratorium = 0;
+                                        $col_ppn_obat = $row['ppn'];
+                                        $col_potongan = 0;
+                                        $col_subtotal = $col_obat_bhp + $col_ppn_obat;
+                                        $ket_potongan = '';
+                                        $nm_dokter = '-';
+                                        $tindakan_operasi_str = '-';
                                     }
 
                                     $tgl_byr = $row['tgl_byr'];
@@ -720,7 +782,7 @@ table.dataTable tbody tr:hover {
                     echo '<div class="no-data">
                             <i class="fas fa-folder-open"></i>
                             <h3>Data Tidak Ditemukan</h3>
-                            <p>Tidak ada transaksi billing atau penjualan bebas yang sesuai pada periode tanggal dan penjab yang dipilih.</p>
+                            <p>Tidak ada transaksi billing, penjualan bebas, atau piutang obat yang sesuai pada periode tanggal dan penjab yang dipilih.</p>
                           </div>';
                 }
             mysqli_close($koneksi);
