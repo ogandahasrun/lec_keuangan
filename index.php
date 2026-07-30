@@ -19,7 +19,7 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
     <title>Laporan Keuangan</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo time(); ?>">
 </head>
 <body>
 
@@ -35,9 +35,7 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
                 <i class="fas fa-home"></i> Dashboard
             </a>
             
-            <div style="padding: 15px 24px 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
-                Laporan Ralan
-            </div>
+
             
             <a href="?page=ppn_obat" class="nav-item <?= $page === 'ppn_obat' ? 'active' : '' ?>">
                 <i class="fas fa-file-invoice"></i> PPN Obat
@@ -51,9 +49,7 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
                 <i class="fas fa-store"></i> Penjualan Bebas
             </a>
             
-            <div style="padding: 15px 24px 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
-                Pendapatan & Jasa
-            </div>
+
             
             <a href="?page=hitung_jasa" class="nav-item <?= $page === 'hitung_jasa' ? 'active' : '' ?>">
                 <i class="fas fa-calculator"></i> Hitung Jasa Umum
@@ -65,6 +61,10 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
             
             <a href="?page=umbal" class="nav-item <?= $page === 'umbal' ? 'active' : '' ?>">
                 <i class="fas fa-sync-alt"></i> Umbal
+            </a>
+            
+            <a href="?page=kontrol_open_billing" class="nav-item <?= $page === 'kontrol_open_billing' ? 'active' : '' ?>">
+                <i class="fas fa-history"></i> Kontrol Open Billing
             </a>
         </div>
         
@@ -89,7 +89,7 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
         <?php
             // Router sederhana
             $pages_dir = 'pages';
-            $allowed_pages = ['dashboard', 'ppn_obat', 'hutang_medis', 'penjualan_bebas', 'hitung_jasa', 'pendapatan_billing', 'umbal'];
+            $allowed_pages = ['dashboard', 'ppn_obat', 'hutang_medis', 'penjualan_bebas', 'hitung_jasa', 'pendapatan_billing', 'umbal', 'kontrol_open_billing'];
             
             if (in_array($page, $allowed_pages)) {
                 if ($page === 'dashboard') {

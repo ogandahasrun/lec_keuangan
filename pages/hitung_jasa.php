@@ -42,25 +42,43 @@ if ($result_ab) {
 <style>
 /* Reset DataTables basic styles to match theme */
 table.dataTable thead th {
-    background: rgba(0,0,0,0.1);
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
+    background: rgba(0,0,0,0.2) !important;
+    color: var(--text-muted) !important;
+    border-bottom: 1px solid var(--border) !important;
+    font-size: 13px !important;
     text-transform: uppercase;
 }
 table.dataTable tbody td {
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border) !important;
     font-size: 14px;
+    background-color: transparent !important;
+    color: var(--text-main) !important;
 }
-table.dataTable.display tbody tr:hover > .sorting_1, table.dataTable.order-column.hover tbody tr:hover > .sorting_1 {
-    background-color: transparent;
+table.dataTable tbody tr {
+    background-color: var(--card-bg) !important;
+}
+table.dataTable.display tbody tr.odd > .sorting_1, 
+table.dataTable.order-column.stripe tbody tr.odd > .sorting_1,
+table.dataTable.display tbody tr.even > .sorting_1, 
+table.dataTable.order-column.stripe tbody tr.even > .sorting_1,
+table.dataTable.display tbody tr.odd,
+table.dataTable.display tbody tr.even,
+table.dataTable.stripe tbody tr.odd,
+table.dataTable.stripe tbody tr.even {
+    background-color: transparent !important;
+}
+table.dataTable.display tbody tr:hover > .sorting_1, 
+table.dataTable.order-column.hover tbody tr:hover > .sorting_1,
+table.dataTable.display tbody tr:hover,
+table.dataTable tbody tr:hover {
+    background-color: rgba(255, 20, 147, 0.15) !important;
 }
 .dataTables_wrapper .dataTables_filter input {
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 10px;
-    background: var(--background);
-    color: var(--text-main);
+    border: 1px solid var(--border) !important;
+    border-radius: 6px !important;
+    padding: 6px 10px !important;
+    background: var(--background) !important;
+    color: var(--text-main) !important;
 }
 .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate {
     color: var(--text-muted) !important;
@@ -85,7 +103,11 @@ table.dataTable.display tbody tr:hover > .sorting_1, table.dataTable.order-colum
     align-items: flex-end;
 }
 .filter-form .form-group { margin: 0; }
-.subtotal-row td { background: rgba(0,0,0,0.2) !important; font-weight: 700; color: var(--text-main); }
+.subtotal-row td, tr.subtotal-row td { 
+    background-color: rgba(0,0,0,0.3) !important; 
+    font-weight: 700 !important; 
+    color: var(--text-main) !important; 
+}
 </style>
 
 <div class="page-header">

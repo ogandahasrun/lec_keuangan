@@ -1,9 +1,9 @@
 <?php
 // Konfigurasi MySQL / MariaDB di XAMPP
-$host = '103.144.213.212';
-$user = 'bpjsfktl';
-$pass = 'bpjsfktl';
-$db   = 'sik';
+$host = 'localhost';
+$user = 'root';
+$pass = '';
+$db   = 'sikbaru';
 
 // Membuat koneksi ke database
 $koneksi = new mysqli($host, $user, $pass, $db);

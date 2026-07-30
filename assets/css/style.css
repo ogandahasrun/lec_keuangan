@@ -323,3 +323,37 @@ body {
 .login-header p {
     color: var(--text-muted);
 }
+
+/* DATATABLES DARK THEME FIXES */
+table.dataTable tbody tr {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+}
+table.dataTable.display tbody tr.odd,
+table.dataTable.display tbody tr.even,
+table.dataTable.stripe tbody tr.odd,
+table.dataTable.stripe tbody tr.even {
+    background-color: var(--card-bg) !important;
+}
+table.dataTable.display tbody tr.odd > .sorting_1, 
+table.dataTable.order-column.stripe tbody tr.odd > .sorting_1,
+table.dataTable.display tbody tr.even > .sorting_1, 
+table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
+    background-color: transparent !important;
+}
+table.dataTable.display tbody tr:hover > .sorting_1, 
+table.dataTable.order-column.hover tbody tr:hover > .sorting_1,
+table.dataTable.display tbody tr:hover,
+table.dataTable tbody tr:hover {
+    background-color: rgba(255, 20, 147, 0.1) !important;
+}
+table.dataTable tbody td {
+    color: var(--text-main) !important;
+}
+.dataTables_wrapper .dataTables_length select {
+    background-color: var(--background);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 4px;
+    border-radius: 4px;
+}
