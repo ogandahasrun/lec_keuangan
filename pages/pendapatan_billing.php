@@ -766,6 +766,8 @@ table.dataTable tbody tr:hover {
                 ordering: false, // disabled to keep chronological subtotal grouping intact
                 responsive: false,
                 scrollX: true,
+                scrollY: '65vh',
+                scrollCollapse: true,
                 drawCallback: function(settings) {
                     var api = this.api();
                     var pageInfo = api.page.info();

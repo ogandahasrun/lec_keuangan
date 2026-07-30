@@ -357,3 +357,20 @@ table.dataTable tbody td {
     padding: 4px;
     border-radius: 4px;
 }
+
+/* FREEZE TABLE HEADERS */
+table thead th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background-color: var(--background) !important;
+    color: var(--text-main) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 0 var(--border) !important;
+}
+
+/* Ensure table container doesn't hide sticky headers */
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 70vh;
+}
