@@ -1,10 +1,15 @@
 :root {
-    --primary: #ff1493; /* Deep Pink */
-    --primary-hover: #ff69b4; /* Hot Pink */
+    --primary: #ff1493;
+    /* Deep Pink */
+    --primary-hover: #ff69b4;
+    /* Hot Pink */
     --secondary: #2d3748;
-    --background: #1a202c; /* Dark Black/Gray */
-    --card-bg: #2d3748; /* Slightly lighter dark for cards */
-    --text-main: #f7fafc; /* Light text */
+    --background: #1a202c;
+    /* Dark Black/Gray */
+    --card-bg: #2d3748;
+    /* Slightly lighter dark for cards */
+    --text-main: #f7fafc;
+    /* Light text */
     --text-muted: #a0aec0;
     --border: #4a5568;
     --success: #38a169;
@@ -280,7 +285,7 @@ body {
 .table-custom th {
     font-weight: 600;
     color: var(--text-muted);
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -329,27 +334,32 @@ table.dataTable tbody tr {
     background-color: var(--card-bg);
     color: var(--text-main);
 }
+
 table.dataTable.display tbody tr.odd,
 table.dataTable.display tbody tr.even,
 table.dataTable.stripe tbody tr.odd,
 table.dataTable.stripe tbody tr.even {
     background-color: var(--card-bg) !important;
 }
-table.dataTable.display tbody tr.odd > .sorting_1, 
-table.dataTable.order-column.stripe tbody tr.odd > .sorting_1,
-table.dataTable.display tbody tr.even > .sorting_1, 
-table.dataTable.order-column.stripe tbody tr.even > .sorting_1 {
+
+table.dataTable.display tbody tr.odd>.sorting_1,
+table.dataTable.order-column.stripe tbody tr.odd>.sorting_1,
+table.dataTable.display tbody tr.even>.sorting_1,
+table.dataTable.order-column.stripe tbody tr.even>.sorting_1 {
     background-color: transparent !important;
 }
-table.dataTable.display tbody tr:hover > .sorting_1, 
-table.dataTable.order-column.hover tbody tr:hover > .sorting_1,
+
+table.dataTable.display tbody tr:hover>.sorting_1,
+table.dataTable.order-column.hover tbody tr:hover>.sorting_1,
 table.dataTable.display tbody tr:hover,
 table.dataTable tbody tr:hover {
     background-color: rgba(255, 20, 147, 0.1) !important;
 }
+
 table.dataTable tbody td {
     color: var(--text-main) !important;
 }
+
 .dataTables_wrapper .dataTables_length select {
     background-color: var(--background);
     color: var(--text-main);
@@ -365,7 +375,7 @@ table thead th {
     z-index: 50 !important;
     background-color: var(--background) !important;
     color: var(--text-main) !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 0 var(--border) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 var(--border) !important;
 }
 
 /* Ensure table container doesn't hide sticky headers */
