@@ -120,6 +120,7 @@ table.dataTable tbody tr:hover {
                 
                 <div style="display: flex; align-items: flex-end; gap: 8px;">
                     <button type="submit" class="btn btn-primary" style="height:42px;"><i class="fas fa-search"></i> Tampilkan</button>
+                    <button type="button" class="btn btn-secondary" style="height:42px;" onclick="copyToClipboard()"><i class="fas fa-copy"></i> Copy</button>
                     <button type="button" class="btn btn-secondary" style="height:42px;" onclick="resetForm()"><i class="fas fa-redo"></i> Reset</button>
                 </div>
             </form>
@@ -254,7 +255,7 @@ table.dataTable tbody tr:hover {
                     }
                 ],
                 paging: false,
-                responsive: true,
+                responsive: false,
                 scrollX: true
             });
         });
@@ -273,11 +274,15 @@ table.dataTable tbody tr:hover {
                 range.selectNode(table);
                 window.getSelection().removeAllRanges();
                 window.getSelection().addRange(range);
-                document.execCommand('copy');
+                try {
+                    document.execCommand('copy');
+                    alert('📋 Data berhasil disalin ke clipboard!');
+                } catch (err) {
+                    alert('❌ Gagal menyalin data ke clipboard!');
+                }
                 window.getSelection().removeAllRanges();
-                
-                // Show notification
-                alert('📋 Data berhasil disalin ke clipboard!');
+            } else {
+                alert('⚠️ Tidak ada data untuk disalin!');
             }
         }
     </script>

@@ -65,6 +65,7 @@ $result_pj = mysqli_query($koneksi, $query_pj);
         
         <div style="display: flex; align-items: flex-end; gap: 8px;">
             <button type="submit" class="btn btn-primary" style="height:42px;"><i class="fas fa-search"></i> Tampilkan</button>
+            <button type="button" class="btn btn-secondary" style="height:42px;" onclick="copyTableData()"><i class="fas fa-copy"></i> Copy</button>
             <button type="button" class="btn btn-secondary" style="height:42px;" onclick="resetForm()"><i class="fas fa-redo"></i> Reset</button>
         </div>
     </form>
