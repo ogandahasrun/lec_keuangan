@@ -108,11 +108,11 @@ table.dataTable tbody tr:hover {
                     <select name="nm_dokter" id="nm_dokter" class="form-control">
                         <option value="">-- Semua Dokter --</option>
                         <?php
-                        $query_dokter = "SELECT DISTINCT nm_dokter FROM lec_umbal ORDER BY nm_dokter";
+                        $query_dokter = "SELECT DISTINCT DPJP FROM inacbg_unencrypted WHERE DPJP IS NOT NULL AND DPJP != '' ORDER BY DPJP";
                         $result_dokter = mysqli_query($koneksi, $query_dokter);
                         while ($row_dokter = mysqli_fetch_assoc($result_dokter)) {
-                            $selected = (isset($_GET['nm_dokter']) && $_GET['nm_dokter'] == $row_dokter['nm_dokter']) ? 'selected' : '';
-                            echo "<option value='{$row_dokter['nm_dokter']}' $selected>{$row_dokter['nm_dokter']}</option>";
+                            $selected = (isset($_GET['nm_dokter']) && $_GET['nm_dokter'] == $row_dokter['DPJP']) ? 'selected' : '';
+                            echo "<option value='" . htmlspecialchars($row_dokter['DPJP']) . "' $selected>" . htmlspecialchars($row_dokter['DPJP']) . "</option>";
                         }
                         ?>
                     </select>
@@ -131,39 +131,38 @@ table.dataTable tbody tr:hover {
     }
 
     if (isset($_GET['bulanklaim']) && !empty($_GET['bulanklaim'])) {
-        $bulanklaim = $_GET['bulanklaim'];
-        $nm_dokter = isset($_GET['nm_dokter']) ? $_GET['nm_dokter'] : '';
+        $bulanklaim = mysqli_real_escape_string($koneksi, $_GET['bulanklaim']);
+        $nm_dokter = isset($_GET['nm_dokter']) ? mysqli_real_escape_string($koneksi, $_GET['nm_dokter']) : '';
 
         $query = "SELECT 
-                    lec_umbal.no_sep,
-                    lec_umbal.no_rawat,
+                    rspsw_umbal.no_sep,
+                    rspsw_umbal.no_rawat,
                     CASE 
                         WHEN nota_inap.no_rawat IS NOT NULL THEN nota_inap.no_nota
                         WHEN nota_jalan.no_rawat IS NOT NULL THEN nota_jalan.no_nota
                         ELSE ''
                     END as no_nota,
-                    lec_umbal.tgl_registrasi,
-                    lec_umbal.nm_pasien,
-                    lec_umbal.nm_dokter,
-                    lec_umbal.diagnosa,
+                    inacbg_unencrypted.ADMISSION_DATE as tgl_registrasi,
+                    inacbg_unencrypted.NAMA_PASIEN as nm_pasien,
+                    inacbg_unencrypted.MRN as no_rkm_medis,
+                    inacbg_unencrypted.DPJP as nm_dokter,
+                    inacbg_unencrypted.DIAGLIST as diagnosa,
+                    inacbg_unencrypted.PROCLIST,
                     lec_kelompok_prosedur.prosedur,
-                    rspsw_umbal.diajukan,
-                    rspsw_umbal.disetujui,
-                    lec_umbal.status,
-                    pasien.no_rkm_medis
+                    inacbg_unencrypted.TOTAL_TARIF as diajukan,
+                    inacbg_unencrypted.TARIF_INACBG as disetujui,
+                    inacbg_unencrypted.PTD
                 FROM 
-                    lec_umbal
-                    LEFT JOIN rspsw_umbal ON lec_umbal.no_sep = rspsw_umbal.no_sep
-                    INNER JOIN reg_periksa ON rspsw_umbal.no_rawat = reg_periksa.no_rawat
-                    INNER JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-                    LEFT JOIN lec_kelompok_prosedur ON lec_umbal.kd_prosedur = lec_kelompok_prosedur.kd_prosedur
-                    LEFT JOIN nota_inap ON lec_umbal.no_rawat = nota_inap.no_rawat
-                    LEFT JOIN nota_jalan ON lec_umbal.no_rawat = nota_jalan.no_rawat
+                    inacbg_unencrypted
+                    INNER JOIN rspsw_umbal ON inacbg_unencrypted.SEP = rspsw_umbal.no_sep
+                    LEFT JOIN lec_kelompok_prosedur ON LEFT(inacbg_unencrypted.PROCLIST, 5) = lec_kelompok_prosedur.kd_prosedur
+                    LEFT JOIN nota_inap ON rspsw_umbal.no_rawat = nota_inap.no_rawat
+                    LEFT JOIN nota_jalan ON rspsw_umbal.no_rawat = nota_jalan.no_rawat
                 WHERE
                     rspsw_umbal.bulanklaim = '$bulanklaim'";
 
         if (!empty($nm_dokter)) {
-            $query .= " AND lec_umbal.nm_dokter = '$nm_dokter'";
+            $query .= " AND inacbg_unencrypted.DPJP = '$nm_dokter'";
         }
 
         $result = mysqli_query($koneksi, $query);
@@ -193,6 +192,17 @@ table.dataTable tbody tr:hover {
             $total_diajukan = 0;
             $total_disetujui = 0;
             while ($row = mysqli_fetch_assoc($result)) {
+                $status = '';
+                if ($row['PTD'] == 1 || $row['PTD'] == '1') {
+                    $status = 'RANAP';
+                } elseif ($row['PTD'] == 2 || $row['PTD'] == '2') {
+                    $status = 'RALAN';
+                } else {
+                    $status = $row['PTD'];
+                }
+
+                $prosedur_text = !empty($row['prosedur']) ? $row['prosedur'] : $row['PROCLIST'];
+
                 echo "<tr>
                         <td>{$no}</td>
                         <td>{$row['no_sep']}</td>
@@ -203,10 +213,10 @@ table.dataTable tbody tr:hover {
                         <td>{$row['no_rkm_medis']}</td>
                         <td>{$row['nm_dokter']}</td>
                         <td>{$row['diagnosa']}</td>
-                        <td>{$row['prosedur']}</td>
+                        <td>{$prosedur_text}</td>
                         <td>" . formatRupiah($row['diajukan']) . "</td>
                         <td>" . formatRupiah($row['disetujui']) . "</td>
-                        <td>{$row['status']}</td>
+                        <td>{$status}</td>
                     </tr>";
                 $no++;
                 $total_diajukan += $row['diajukan'];
