@@ -149,12 +149,12 @@ table.dataTable tbody tr:hover {
                     inacbg_unencrypted.DIAGLIST as diagnosa,
                     inacbg_unencrypted.PROCLIST,
                     lec_kelompok_prosedur.prosedur,
-                    inacbg_unencrypted.TOTAL_TARIF as diajukan,
-                    inacbg_unencrypted.TARIF_INACBG as disetujui,
+                    rspsw_umbal.diajukan,
+                    rspsw_umbal.disetujui,
                     inacbg_unencrypted.PTD
                 FROM 
-                    inacbg_unencrypted
-                    INNER JOIN rspsw_umbal ON inacbg_unencrypted.SEP = rspsw_umbal.no_sep
+                    rspsw_umbal
+                    LEFT JOIN inacbg_unencrypted ON rspsw_umbal.no_sep = inacbg_unencrypted.SEP
                     LEFT JOIN lec_kelompok_prosedur ON LEFT(inacbg_unencrypted.PROCLIST, 5) = lec_kelompok_prosedur.kd_prosedur
                     LEFT JOIN nota_inap ON rspsw_umbal.no_rawat = nota_inap.no_rawat
                     LEFT JOIN nota_jalan ON rspsw_umbal.no_rawat = nota_jalan.no_rawat
