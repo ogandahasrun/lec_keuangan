@@ -432,7 +432,7 @@ table.dataTable tbody tr:hover {
                                 // Query 8: Tindakan Operasi from billing
                                 $query_tindakan_op_bill_sub = "SELECT GROUP_CONCAT(nm_perawatan SEPARATOR ', ') as tindakan_op 
                                                                FROM billing 
-                                                               WHERE no_rawat = ? AND status = 'operasi' AND nm_perawatan NOT LIKE '%Pemeriksaan NCT%'";
+                                                                WHERE no_rawat = ? AND status = 'operasi' AND nm_perawatan NOT LIKE '%Pemeriksaan NCT%' AND nm_perawatan NOT LIKE '%narkose%'";
                                 $stmt_tindakan_op_bill_sub = mysqli_prepare($koneksi, $query_tindakan_op_bill_sub);
 
                                 // Query 9: Tindakan Operasi from rawat_jl_drpr
