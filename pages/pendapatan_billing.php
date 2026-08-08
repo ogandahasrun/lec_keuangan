@@ -380,7 +380,7 @@ table.dataTable tbody tr:hover {
                                 // Query 1: Billing details for a specific no_rawat
                                 $query_billing_sub = "SELECT 
                                                         Sum(CASE WHEN status = 'registrasi' THEN totalbiaya ELSE 0 END) as registrasi_total,
-                                                        Sum(CASE WHEN status = 'operasi' AND nm_perawatan NOT LIKE '%Pemeriksaan NCT%' THEN totalbiaya ELSE 0 END) as operasi_total,
+                                                        Sum(CASE WHEN status = 'operasi' AND nm_perawatan NOT LIKE '%Pemeriksaan NCT%' AND nm_perawatan NOT LIKE '%narkose%' THEN totalbiaya ELSE 0 END) as operasi_total,
                                                         Sum(CASE WHEN status = 'operasi' AND nm_perawatan LIKE '%Pemeriksaan NCT%' THEN totalbiaya ELSE 0 END) as nct_total,
                                                         Sum(CASE WHEN status = 'obat' AND nm_perawatan LIKE '%lensa%' AND nm_perawatan <> 'PPN Obat' THEN totalbiaya ELSE 0 END) as lensa_total,
                                                         Sum(CASE WHEN status = 'obat' AND nm_perawatan NOT LIKE '%lensa%' AND nm_perawatan <> 'PPN Obat' THEN totalbiaya ELSE 0 END) as obat_bhp_total,
