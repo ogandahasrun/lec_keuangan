@@ -405,8 +405,10 @@ table.dataTable tbody tr:hover {
 
                                 // Query 3: Inpatient treatments for a specific no_rawat
                                 $query_ranap_sub = "SELECT 
-                                                        Sum(rawat_inap_drpr.biaya_rawat) as ranap_tindakan
+                                                        Sum(CASE WHEN jns_perawatan_inap.kd_kategori = 'PNJ01' THEN 0 ELSE rawat_inap_drpr.biaya_rawat END) as ranap_tindakan,
+                                                        Sum(CASE WHEN jns_perawatan_inap.kd_kategori = 'PNJ01' THEN rawat_inap_drpr.biaya_rawat ELSE 0 END) as ranap_penunjang
                                                       FROM rawat_inap_drpr
+                                                      LEFT JOIN jns_perawatan_inap ON rawat_inap_drpr.kd_jenis_prw = jns_perawatan_inap.kd_jenis_prw
                                                       WHERE rawat_inap_drpr.no_rawat = ?";
                                 $stmt_ranap_sub = mysqli_prepare($koneksi, $query_ranap_sub);
 
@@ -491,12 +493,14 @@ table.dataTable tbody tr:hover {
 
                                         // 3. Fetch from rawat_inap_drpr
                                         $ranap_tindakan = 0;
+                                        $ranap_penunjang = 0;
                                         if ($stmt_ranap_sub) {
                                             mysqli_stmt_bind_param($stmt_ranap_sub, "s", $no_rawat);
                                             mysqli_stmt_execute($stmt_ranap_sub);
                                             $res_ranap = mysqli_stmt_get_result($stmt_ranap_sub);
                                             if ($r_ranap = mysqli_fetch_assoc($res_ranap)) {
                                                 $ranap_tindakan = $r_ranap['ranap_tindakan'] ?? 0;
+                                                $ranap_penunjang = $r_ranap['ranap_penunjang'] ?? 0;
                                             }
                                         }
 
@@ -577,7 +581,7 @@ table.dataTable tbody tr:hover {
 
                                         // Calculate columns based on rules
                                         $col_rawat_jalan = $registrasi_total + $ralan_tindakan;
-                                        $col_pelayanan_penunjang = $penunjang + $nct_total;
+                                        $col_pelayanan_penunjang = $penunjang + $nct_total + $ranap_penunjang;
                                         $col_operasi = $operasi_total + $ralan_operasi;
                                         $col_lensa = $lensa_total;
                                         $col_obat_bhp = $obat_bhp_total;
