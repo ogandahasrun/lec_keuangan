@@ -338,8 +338,8 @@ table.dataTable tbody tr:hover {
                                     <th>Nomor Nota</th>
                                     <th class="text-right">Rawat Jalan</th>
                                     <th class="text-right">Penunjang</th>
-                                    <th class="text-right">Tindakan Non Bedah</th>
                                     <th class="text-right">Operasi</th>
+                                    <th class="text-right">Tindakan Non Bedah</th>
                                     <th class="text-right">Lensa</th>
                                     <th class="text-right">Obat & BHP</th>
                                     <th class="text-right">Ranap</th>
@@ -439,11 +439,11 @@ table.dataTable tbody tr:hover {
                                                                 WHERE no_rawat = ? AND status = 'operasi' AND nm_perawatan NOT LIKE '%Pemeriksaan NCT%' AND nm_perawatan NOT LIKE '%narkose%'";
                                 $stmt_tindakan_op_bill_sub = mysqli_prepare($koneksi, $query_tindakan_op_bill_sub);
 
-                                // Query 9: Tindakan Operasi from rawat_jl_drpr
-                                $query_tindakan_op_ralan_sub = "SELECT GROUP_CONCAT(jns_perawatan.nm_perawatan SEPARATOR ', ') as tindakan_op 
+                                // Query 9: Tindakan Operasi & Non Bedah from rawat_jl_drpr
+                                $query_tindakan_op_ralan_sub = "SELECT GROUP_CONCAT(DISTINCT jns_perawatan.nm_perawatan SEPARATOR ', ') as tindakan_op 
                                                                 FROM rawat_jl_drpr 
                                                                 INNER JOIN jns_perawatan ON rawat_jl_drpr.kd_jenis_prw = jns_perawatan.kd_jenis_prw 
-                                                                WHERE rawat_jl_drpr.no_rawat = ? AND jns_perawatan.kd_kategori = 'KP042'";
+                                                                WHERE rawat_jl_drpr.no_rawat = ? AND jns_perawatan.kd_kategori IN ('KP042', 'BDH02')";
                                 $stmt_tindakan_op_ralan_sub = mysqli_prepare($koneksi, $query_tindakan_op_ralan_sub);
 
                                 foreach ($combined_rows as $row) {
@@ -646,8 +646,8 @@ table.dataTable tbody tr:hover {
                                                 <td colspan='7' class='text-center'>SUBTOTAL TANGGAL " . htmlspecialchars($current_date) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['ralan']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['penunjang']) . "</td>
-                                                <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['operasi']) . "</td>
+                                                <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['lensa']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['obat_bhp']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['ranap']) . "</td>
@@ -719,8 +719,8 @@ table.dataTable tbody tr:hover {
                                         <td><?php echo htmlspecialchars($row['nm_perawatan']); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_rawat_jalan); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_pelayanan_penunjang); ?></td>
-                                        <td class="text-right"><?php echo formatRupiah($col_non_bedah); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_operasi); ?></td>
+                                        <td class="text-right"><?php echo formatRupiah($col_non_bedah); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_lensa); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_obat_bhp); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_ranap); ?></td>
@@ -744,8 +744,8 @@ table.dataTable tbody tr:hover {
                                             <td colspan='7' class='text-center'>SUBTOTAL TANGGAL " . htmlspecialchars($current_date) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['ralan']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['penunjang']) . "</td>
-                                            <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['operasi']) . "</td>
+                                            <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['lensa']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['obat_bhp']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['ranap']) . "</td>
@@ -776,8 +776,8 @@ table.dataTable tbody tr:hover {
                                     <th colspan="7" class="text-center">GRAND TOTAL</th>
                                     <th class="text-right"><?php echo formatRupiah($totals['ralan']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['penunjang']); ?></th>
-                                    <th class="text-right"><?php echo formatRupiah($totals['non_bedah']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['operasi']); ?></th>
+                                    <th class="text-right"><?php echo formatRupiah($totals['non_bedah']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['lensa']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['obat_bhp']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['ranap']); ?></th>
