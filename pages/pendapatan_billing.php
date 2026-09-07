@@ -342,6 +342,7 @@ table.dataTable tbody tr:hover {
                                     <th class="text-right">Tindakan Non Bedah</th>
                                     <th class="text-right">Lensa</th>
                                     <th class="text-right">Obat & BHP</th>
+                                    <th class="text-right">Resep Pulang</th>
                                     <th class="text-right">Ranap</th>
                                     <th class="text-right">Narkose</th>
                                     <th class="text-right">Laboratorium</th>
@@ -361,14 +362,14 @@ table.dataTable tbody tr:hover {
                                 $no = 1;
                                 $totals = [
                                     'ralan' => 0, 'penunjang' => 0, 'non_bedah' => 0, 'operasi' => 0, 'lensa' => 0,
-                                    'obat_bhp' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
+                                    'obat_bhp' => 0, 'resep_pulang' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
                                     'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
                                     'bayar' => []
                                 ];
                                 $current_date = null;
                                 $date_totals = [
                                     'ralan' => 0, 'penunjang' => 0, 'non_bedah' => 0, 'operasi' => 0, 'lensa' => 0,
-                                    'obat_bhp' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
+                                    'obat_bhp' => 0, 'resep_pulang' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
                                     'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
                                     'bayar' => []
                                 ];
@@ -385,6 +386,7 @@ table.dataTable tbody tr:hover {
                                                         Sum(CASE WHEN status = 'operasi' AND nm_perawatan LIKE '%Pemeriksaan NCT%' THEN totalbiaya ELSE 0 END) as nct_total,
                                                         Sum(CASE WHEN status = 'obat' AND nm_perawatan LIKE '%lensa%' AND nm_perawatan <> 'PPN Obat' THEN totalbiaya ELSE 0 END) as lensa_total,
                                                         Sum(CASE WHEN status = 'obat' AND nm_perawatan NOT LIKE '%lensa%' AND nm_perawatan <> 'PPN Obat' THEN totalbiaya ELSE 0 END) as obat_bhp_total,
+                                                        Sum(CASE WHEN status = 'Resep Pulang' THEN totalbiaya ELSE 0 END) as resep_pulang_total,
                                                         Sum(CASE WHEN status = 'kamar' THEN totalbiaya ELSE 0 END) as kamar_total,
                                                         Sum(CASE WHEN status = 'operasi' AND nm_perawatan LIKE '%narkose%' THEN totalbiaya ELSE 0 END) as narkose_total,
                                                         Sum(CASE WHEN status = 'Laborat' THEN totalbiaya ELSE 0 END) as laborat_total,
@@ -457,7 +459,7 @@ table.dataTable tbody tr:hover {
 
                                         // 1. Fetch from billing table
                                         $registrasi_total = 0; $operasi_total = 0; $nct_total = 0; $lensa_total = 0;
-                                        $obat_bhp_total = 0; $kamar_total = 0; $narkose_total = 0;
+                                        $obat_bhp_total = 0; $resep_pulang_total = 0; $kamar_total = 0; $narkose_total = 0;
                                         $laborat_total = 0; $ppn_obat_total = 0; $potongan_total = 0;
 
                                         if ($stmt_billing_sub) {
@@ -470,6 +472,7 @@ table.dataTable tbody tr:hover {
                                                 $nct_total = $r_bill['nct_total'] ?? 0;
                                                 $lensa_total = $r_bill['lensa_total'] ?? 0;
                                                 $obat_bhp_total = $r_bill['obat_bhp_total'] ?? 0;
+                                                $resep_pulang_total = $r_bill['resep_pulang_total'] ?? 0;
                                                 $kamar_total = $r_bill['kamar_total'] ?? 0;
                                                 $narkose_total = $r_bill['narkose_total'] ?? 0;
                                                 $laborat_total = $r_bill['laborat_total'] ?? 0;
@@ -590,6 +593,7 @@ table.dataTable tbody tr:hover {
                                         $col_operasi = $operasi_total + $ralan_operasi;
                                         $col_lensa = $lensa_total;
                                         $col_obat_bhp = $obat_bhp_total;
+                                        $col_resep_pulang = $resep_pulang_total;
                                         $col_ranap = $kamar_total + $ranap_tindakan;
                                         $col_narkose = $narkose_total;
                                         $col_laboratorium = $laborat_total;
@@ -597,7 +601,7 @@ table.dataTable tbody tr:hover {
                                         $col_potongan = $potongan_total;
 
                                         $col_subtotal = ($col_rawat_jalan + $col_pelayanan_penunjang + $col_non_bedah + $col_operasi + $col_lensa + 
-                                                         $col_obat_bhp + $col_ranap + $col_narkose + $col_laboratorium + $col_ppn_obat) + $col_potongan;
+                                                         $col_obat_bhp + $col_resep_pulang + $col_ranap + $col_narkose + $col_laboratorium + $col_ppn_obat) + $col_potongan;
                                     } else if ($row['type'] === 'penjualan') {
                                         // Penjualan Bebas Row
                                         $col_rawat_jalan = 0;
@@ -606,6 +610,7 @@ table.dataTable tbody tr:hover {
                                         $col_operasi = 0;
                                         $col_lensa = 0;
                                         $col_obat_bhp = $row['total_obat_bhp'];
+                                        $col_resep_pulang = 0;
                                         $col_ranap = 0;
                                         $col_narkose = 0;
                                         $col_laboratorium = 0;
@@ -628,6 +633,7 @@ table.dataTable tbody tr:hover {
                                         $col_operasi = 0;
                                         $col_lensa = 0;
                                         $col_obat_bhp = $row['total_obat_bhp'];
+                                        $col_resep_pulang = 0;
                                         $col_ranap = 0;
                                         $col_narkose = 0;
                                         $col_laboratorium = 0;
@@ -650,6 +656,7 @@ table.dataTable tbody tr:hover {
                                                 <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['lensa']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['obat_bhp']) . "</td>
+                                                <td class='text-right'>" . formatRupiah($date_totals['resep_pulang']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['ranap']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['narkose']) . "</td>
                                                 <td class='text-right'>" . formatRupiah($date_totals['laborat']) . "</td>
@@ -682,6 +689,7 @@ table.dataTable tbody tr:hover {
                                     $date_totals['operasi'] += $col_operasi;
                                     $date_totals['lensa'] += $col_lensa;
                                     $date_totals['obat_bhp'] += $col_obat_bhp;
+                                    $date_totals['resep_pulang'] += $col_resep_pulang;
                                     $date_totals['ranap'] += $col_ranap;
                                     $date_totals['narkose'] += $col_narkose;
                                     $date_totals['laborat'] += $col_laboratorium;
@@ -696,6 +704,7 @@ table.dataTable tbody tr:hover {
                                     $totals['operasi'] += $col_operasi;
                                     $totals['lensa'] += $col_lensa;
                                     $totals['obat_bhp'] += $col_obat_bhp;
+                                    $totals['resep_pulang'] += $col_resep_pulang;
                                     $totals['ranap'] += $col_ranap;
                                     $totals['narkose'] += $col_narkose;
                                     $totals['laborat'] += $col_laboratorium;
@@ -723,6 +732,7 @@ table.dataTable tbody tr:hover {
                                         <td class="text-right"><?php echo formatRupiah($col_non_bedah); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_lensa); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_obat_bhp); ?></td>
+                                        <td class="text-right"><?php echo formatRupiah($col_resep_pulang); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_ranap); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_narkose); ?></td>
                                         <td class="text-right"><?php echo formatRupiah($col_laboratorium); ?></td>
@@ -748,6 +758,7 @@ table.dataTable tbody tr:hover {
                                             <td class='text-right'>" . formatRupiah($date_totals['non_bedah']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['lensa']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['obat_bhp']) . "</td>
+                                            <td class='text-right'>" . formatRupiah($date_totals['resep_pulang']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['ranap']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['narkose']) . "</td>
                                             <td class='text-right'>" . formatRupiah($date_totals['laborat']) . "</td>
@@ -780,6 +791,7 @@ table.dataTable tbody tr:hover {
                                     <th class="text-right"><?php echo formatRupiah($totals['non_bedah']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['lensa']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['obat_bhp']); ?></th>
+                                    <th class="text-right"><?php echo formatRupiah($totals['resep_pulang']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['ranap']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['narkose']); ?></th>
                                     <th class="text-right"><?php echo formatRupiah($totals['laborat']); ?></th>
