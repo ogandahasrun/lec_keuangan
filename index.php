@@ -49,8 +49,10 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
                 <i class="fas fa-store"></i> Penjualan Bebas
             </a>
             
+            <a href="?page=stok_farmasi_per_tanggal" class="nav-item <?= $page === 'stok_farmasi_per_tanggal' ? 'active' : '' ?>">
+                <i class="fas fa-boxes"></i> Stok Farmasi Per Tanggal
+            </a>
 
-            
             <a href="?page=hitung_jasa" class="nav-item <?= $page === 'hitung_jasa' ? 'active' : '' ?>">
                 <i class="fas fa-calculator"></i> Hitung Jasa Umum
             </a>
@@ -89,7 +91,7 @@ $nama_lengkap = $_SESSION['nama_lengkap'] ?? $_SESSION['username'];
         <?php
             // Router sederhana
             $pages_dir = 'pages';
-            $allowed_pages = ['dashboard', 'ppn_obat', 'hutang_medis', 'penjualan_bebas', 'hitung_jasa', 'pendapatan_billing', 'umbal', 'kontrol_open_billing'];
+            $allowed_pages = ['dashboard', 'ppn_obat', 'hutang_medis', 'penjualan_bebas', 'stok_farmasi_per_tanggal', 'hitung_jasa', 'pendapatan_billing', 'umbal', 'kontrol_open_billing'];
             
             if (in_array($page, $allowed_pages)) {
                 if ($page === 'dashboard') {
