@@ -364,14 +364,14 @@ table.dataTable tbody tr:hover {
                                 $totals = [
                                     'ralan' => 0, 'penunjang' => 0, 'non_bedah' => 0, 'operasi' => 0, 'lensa' => 0,
                                     'obat_bhp' => 0, 'resep_pulang' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
-                                    'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
+                                    'radiologi' => 0, 'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
                                     'bayar' => []
                                 ];
                                 $current_date = null;
                                 $date_totals = [
                                     'ralan' => 0, 'penunjang' => 0, 'non_bedah' => 0, 'operasi' => 0, 'lensa' => 0,
                                     'obat_bhp' => 0, 'resep_pulang' => 0, 'ranap' => 0, 'narkose' => 0, 'laborat' => 0,
-                                    'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
+                                    'radiologi' => 0, 'ppn_obat' => 0, 'potongan' => 0, 'sub_total' => 0,
                                     'bayar' => []
                                 ];
                                 foreach ($akun_bayar_options as $ab) {
@@ -462,7 +462,7 @@ table.dataTable tbody tr:hover {
                                         // 1. Fetch from billing table
                                         $registrasi_total = 0; $operasi_total = 0; $nct_total = 0; $lensa_total = 0;
                                         $obat_bhp_total = 0; $resep_pulang_total = 0; $kamar_total = 0; $narkose_total = 0;
-                                        $laborat_total = 0; $ppn_obat_total = 0; $potongan_total = 0;
+                                        $laborat_total = 0; $radiologi_total = 0; $ppn_obat_total = 0; $potongan_total = 0;
 
                                         if ($stmt_billing_sub) {
                                             mysqli_stmt_bind_param($stmt_billing_sub, "s", $no_rawat);
@@ -605,7 +605,7 @@ table.dataTable tbody tr:hover {
                                         $col_potongan = $potongan_total;
 
                                         $col_subtotal = ($col_rawat_jalan + $col_pelayanan_penunjang + $col_non_bedah + $col_operasi + $col_lensa + 
-                                                         $col_obat_bhp + $col_resep_pulang + $col_ranap + $col_narkose + $col_laboratorium + $col_ppn_obat) + $col_potongan;
+                                                         $col_obat_bhp + $col_resep_pulang + $col_ranap + $col_narkose + $col_laboratorium + $col_radiologi + $col_ppn_obat) + $col_potongan;
                                     } else if ($row['type'] === 'penjualan') {
                                         // Penjualan Bebas Row
                                         $col_rawat_jalan = 0;
