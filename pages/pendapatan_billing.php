@@ -159,7 +159,7 @@ table.dataTable tbody tr:hover {
 
             <?php
             function formatRupiah($angka) {
-                return $angka;
+                return round($angka);
             }
 
             // Build main query to fetch transactions
@@ -248,8 +248,8 @@ table.dataTable tbody tr:hover {
                                 'nm_pasien' => $r_pj['nm_pasien'],
                                 'png_jawab' => 'Penjualan Bebas',
                                 'nm_perawatan' => $r_pj['nota_jual'],
-                                'total_obat_bhp' => (float)$r_pj['total_obat_bhp'],
-                                'ppn' => (float)$r_pj['ppn'],
+                                'total_obat_bhp' => round((float)$r_pj['total_obat_bhp']),
+                                'ppn' => round((float)$r_pj['ppn']),
                                 'nama_bayar' => $r_pj['nama_bayar'],
                                 'nm_dokter' => '-'
                             ];
@@ -286,9 +286,9 @@ table.dataTable tbody tr:hover {
                                 'nm_pasien' => $r_pt['nm_pasien'],
                                 'png_jawab' => 'Piutang Obat',
                                 'nm_perawatan' => $r_pt['nota_piutang'],
-                                'total_obat_bhp' => (float)$r_pt['total_obat_bhp'],
-                                'ppn' => (float)$r_pt['ppn'],
-                                'sisapiutang' => (float)$r_pt['sisapiutang'],
+                                'total_obat_bhp' => round((float)$r_pt['total_obat_bhp']),
+                                'ppn' => round((float)$r_pt['ppn']),
+                                'sisapiutang' => round((float)$r_pt['sisapiutang']),
                                 'nama_bayar' => '',
                                 'nm_dokter' => '-'
                             ];
@@ -632,14 +632,14 @@ table.dataTable tbody tr:hover {
                                         $col_lensa = 0;
                                         $col_obat_bhp_ralan = 0;
                                         $col_obat_bhp_ranap = 0;
-                                        $col_penjualan_bebas = $row['total_obat_bhp'];
+                                        $col_penjualan_bebas = round($row['total_obat_bhp']);
                                         $col_piutang_obat = 0;
                                         $col_resep_pulang = 0;
                                         $col_ranap = 0;
                                         $col_narkose = 0;
                                         $col_laboratorium = 0;
                                         $col_radiologi = 0;
-                                        $col_ppn_obat = $row['ppn'];
+                                        $col_ppn_obat = round($row['ppn']);
                                         $col_potongan = 0;
                                         $col_subtotal = $col_penjualan_bebas + $col_ppn_obat;
                                         $ket_potongan = '';
@@ -660,13 +660,13 @@ table.dataTable tbody tr:hover {
                                         $col_obat_bhp_ralan = 0;
                                         $col_obat_bhp_ranap = 0;
                                         $col_penjualan_bebas = 0;
-                                        $col_piutang_obat = $row['total_obat_bhp'];
+                                        $col_piutang_obat = round($row['total_obat_bhp']);
                                         $col_resep_pulang = 0;
                                         $col_ranap = 0;
                                         $col_narkose = 0;
                                         $col_laboratorium = 0;
                                         $col_radiologi = 0;
-                                        $col_ppn_obat = $row['ppn'];
+                                        $col_ppn_obat = round($row['ppn']);
                                         $col_potongan = 0;
                                         $col_subtotal = $col_piutang_obat + $col_ppn_obat;
                                         $ket_potongan = '';
