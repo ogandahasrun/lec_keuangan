@@ -85,7 +85,7 @@ if (isset($_GET['tanggal'])) {
 
             $h_beli = (float)($row['h_beli'] ?? 0);
             $h_pesan_raw = $row['h_pesan_terakhir'] !== null ? (float)$row['h_pesan_terakhir'] : null;
-            $h_pesan_ppn = $h_pesan_raw !== null ? $h_pesan_raw * 1.11 : null;
+            $h_pesan_ppn = $h_pesan_raw !== null ? round($h_pesan_raw * 1.11) : null;
 
             $data_stok[] = [
                 'kode_brng'        => $row['kode_brng'],
@@ -279,10 +279,10 @@ table.dataTable tbody tr:hover {
                                 <?= number_format($row['stok_akhir'], 2, ',', '.') ?>
                             </td>
                             <td style="text-align: right; font-weight: 600; color: var(--text-main);">
-                                <?= number_format($row['h_beli'], 2, ',', '.') ?>
+                                <?= number_format($row['h_beli'], 0, ',', '.') ?>
                             </td>
                             <td style="text-align: right; font-weight: 600; color: <?= $row['h_pesan_terakhir'] !== null ? 'var(--success)' : 'var(--text-muted)' ?>;">
-                                <?= $row['h_pesan_terakhir'] !== null ? number_format($row['h_pesan_terakhir'], 2, ',', '.') : '-' ?>
+                                <?= $row['h_pesan_terakhir'] !== null ? number_format($row['h_pesan_terakhir'], 0, ',', '.') : '-' ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -305,7 +305,7 @@ table.dataTable tbody tr:hover {
 
 <!-- DataTables & Copy Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
 <script>
 $(document.body).ready(function() {
